@@ -1,9 +1,10 @@
 package ru.netology.delivery.test;
 
 import com.codeborne.selenide.Selectors;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import com.codeborne.selenide.logevents.SelenideLogger;
+import io.qameta.allure.Step;
+import io.qameta.allure.selenide.AllureSelenide;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.Keys;
 import ru.netology.delivery.data.DataGenerator;
 
@@ -13,6 +14,16 @@ import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 
 class ReplanDeliveryTest {
+
+    @BeforeAll
+    static void setUpAll(){
+        SelenideLogger.addListener("allure", new AllureSelenide());
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        SelenideLogger.removeListener("allure");
+    }
 
     @BeforeEach
     void setup() {
@@ -27,7 +38,7 @@ class ReplanDeliveryTest {
         var firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
         var daysToAddForSecondMeeting = 7;
         var secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
-            //Ввод в поле Город
+        //Ввод в поле Город
         $("[data-test-id='city'] input").setValue(validUser.getCity());
             //Очистка поля Дата
         $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
@@ -50,6 +61,7 @@ class ReplanDeliveryTest {
         $$("button").find(exactText("Запланировать")).click();
         $$("[data-test-id='replan-notification'] button").find(exactText("Перепланировать")).click();
             //Проверка
+
         $("[data-test-id='success-notification']")
                 .shouldBe(visible, Duration.ofSeconds(15))
                 .$(".notification__content")
